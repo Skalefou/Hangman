@@ -5,6 +5,7 @@ static const std::string drawWant[3]{ {"Please enter a letter:"}, {"Veuillez ent
 static const std::string endWin[3]{ {"Congratulations! You win!"}, {"Félicitation ! Vous avez gagné !"}, {"¡Felicitaciones!Has ganado!"}};
 static const std::string endGameOver[3]{ {"Too bad you lost! Here is the word: "}, {"Dommage, vous avez perdu ! Voici le mot : "}, {"¡Lástima que hayas perdido! Aquí está la palabra:"}};
 static const std::string endPurpose[3]{ {"\n1 - Retry\n2 - Change the language\n3 - Quit"},{"\n1 - Recommencer\n2 - Changer la langue\n3 - Quitter"},{"\n1 - Reiniciar\n2 - Cambiar el idioma\n3 - Dejar"}};
+static const std::string finalState{ "------\n|/   |\n|   \\O/\n|    |\n|   / \n|\n----" };
 
 Game::Game() : m_life(11), m_state(START), m_language(ENGLISH), m_input(""), m_letterFind(0), m_differentLetter(""), m_secretWordHide("")
 {}
@@ -23,20 +24,25 @@ void Game::inGame()
 
 			if (verifQuit())
 				quit = true;
-			else if (m_input.length() == 1)
+			else if (m_input.length() == 1 or m_input == m_secretWordWithoutAccent)
 			{
 				bool l = false;
-				for (unsigned int i = 0; i < m_secretWordWithoutAccent.length(); i++)
+				if (m_input == m_secretWordWithoutAccent)
+					m_letterFind = m_secretWordWithoutAccent.length();
+				else
 				{
-					if (m_input[0] == m_secretWordWithoutAccent[i])
+					for (unsigned int i = 0; i < m_secretWordWithoutAccent.length(); i++)
 					{
-						m_secretWordHide[i] = m_secretWord[i];
-						m_letterFind++;
-						l = true;
+						if (m_input[0] == m_secretWordWithoutAccent[i])
+						{
+							m_secretWordHide[i] = m_secretWord[i];
+							m_letterFind++;
+							l = true;
+						}
 					}
+					if (!l)
+						m_life--;
 				}
-				if (!l)
-					m_life--;
 			}
 			if (m_letterFind == m_secretWordWithoutAccent.length())
 				quit = reset(endWin[m_language]);
@@ -204,6 +210,49 @@ void Game::clearConsole() const
 #endif
 }
 
+std::string Game::stateDraw() const
+{
+	std::string s{ "" };
+	//"------\n|/   |\n|   \\O/\n|    |\n|   / \n|\n----"
+	switch (m_life)
+	{
+	case 11:
+		s = "";
+		break;
+	case 10:
+		s = "\n\n\n\n\n----";
+		break;
+	case 9:
+		s = "\n|\n|\n|\n|\n----";
+		break;
+	case 8:
+		s = "------\n|\n|\n|\n|\n----";
+		break;
+	case 7:
+		s = "------\n|/\n|\n|\n|\n----";
+		break;
+	case 6:
+		s = "------\n|/   |\n|\n|\n|\n----";
+		break;
+	case 5:
+		s = "------\n|/   |\n|    O\n|\n|\n----";
+		break;
+	case 4:
+		s = "------\n|/   |\n|    O\n|    |\n|\n----";
+		break;
+	case 3:
+		s = "------\n|/   |\n|   \\O\n|    |\n|\n----";
+		break;
+	case 2:
+		s = "------\n|/   |\n|   \\O/\n|    |\n|\n----";
+		break;
+	case 1:
+		s = "------\n|/   |\n|   \\O/\n|    |\n|   / \n|\n----";
+		break;
+	}
+	return s;
+}
+
 void Game::generation()
 {
 	m_secretWord = Dictionary::loadWord(m_language);
@@ -223,5 +272,5 @@ bool Game::verifQuit() const
 void Game::draw() const
 {
 
-	std::cout << "Live : " << m_life << "/11" << std::endl << m_secretWordHide << std::endl << drawWant[m_language] << std::endl;
+	std::cout << "Live : " << m_life << "/11" << std::endl << stateDraw() << std::endl << m_secretWordHide << std::endl << drawWant[m_language] << std::endl;
 }

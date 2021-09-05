@@ -23,6 +23,7 @@ public:
 	bool inputIsTrue(std::string inputChoice) const;
 	bool reset(const std::string m);
 	void clearConsole() const;
+	std::string stateDraw() const;
 	void generation();
 	void draw() const;
 	bool verifQuit() const;
