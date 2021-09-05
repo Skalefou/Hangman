@@ -6,24 +6,31 @@
 #include <limits>
 #include <string>
 #include <algorithm>
-#if defined(WIN32) && !defined(UNIX)
 #include <stdlib.h>
-#endif
 
-enum {START, PLAY, GAME_OVER, QUIT};
+enum {START, PLAY, QUIT};
+enum {ENGLISH, FRENCH, SPANISH};
 
 class Game
 {
 public:
 	Game();
 	void inGame();
-	void start();
+	bool start();
+	bool startLanguage();
 	void writeInput();
-	bool inputIsTrue(std::string inputChoice);
+	unsigned int end(const std::string endText);
+	bool inputIsTrue(std::string inputChoice) const;
+	bool reset(const std::string m);
+	void clearConsole() const;
+	void generation();
+	void draw() const;
+	bool verifQuit() const;
 private:
-	unsigned int m_state, m_life;
-	unsigned int m_language; //0 = french (francais), 1 = english
-	std::string m_input;
+	unsigned int m_state, m_life, m_letterFind;
+	unsigned int m_language; //0 = english, 1 = french (francais)
+	std::string m_input, m_secretWord, m_differentLetter, m_secretWordWithoutAccent, m_secretWordHide;
+
 };
 
 #endif

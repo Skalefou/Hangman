@@ -1,6 +1,4 @@
 #include "game.hpp"
-#include <iostream>
-#include <stdlib.h>
 
 int main(void)
 {
